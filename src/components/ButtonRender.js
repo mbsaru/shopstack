@@ -3,8 +3,9 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button"; // Your Shadcn Button
-import { IconMap } from '@/utils/iconMaps';
 import { cn } from '@/lib/utils'; // For tailwind-merge/clsx utility
+
+import { IconRender } from './IconRender';
 
 const ButtonRender = ({
   text,
@@ -18,7 +19,6 @@ const ButtonRender = ({
   ...props
 }) => {
 
-  const IconComponent = icon && IconMap[icon] ? IconMap[icon] : null;
 
   const handleClick = (e) => {
     if (!onClick || !dispatchAction) {
@@ -27,31 +27,33 @@ const ButtonRender = ({
     }
 
     const { action, payload } = onClick;
-
+    console.log('action',action)
+    console.log('payload',payload)
     // Merge itemContext into payload if available, useful for list items (e.g. cart item ID)
     const finalPayload = itemContext ? { ...payload, ...itemContext } : payload;
 
     switch (action) {
       case 'makeApiCall':
       case 'logout':
-      case 'navigateTo' || 'cart':
-        dispatchAction(action, finalPayload);
+      case 'navigateTo':
+      case 'handleActionDispatch':
+      case 'dispatch':
+        dispatchAction(payload.action, finalPayload);
         break;
-      case 'redirectToExternal': // For Instagram, WhatsApp, external links
-        if (finalPayload && finalPayload.url) {
-          window.open(finalPayload.url, '_blank'); // Opens in a new tab
-        } else {
-          console.error("redirectToExternal action requires a 'url' in payload.", finalPayload);
+
+      case 'redirectToExternal':
+        if (finalPayload?.url) {
+          window.open(finalPayload.url, '_blank');
         }
         break;
-      case 'showAlert': // If you want a button to directly trigger an alert
+
+      case 'showAlert':
         dispatchAction(action, finalPayload);
         break;
-      // Add more cases for other specific actions your system might have
+
       default:
-        console.warn(`ButtonRender: Unknown action type '${action}' for button click.`);
-        dispatchAction(action, finalPayload)
-        break;
+        console.warn(`ButtonRender: Unknown action type '${action}'`);
+        dispatchAction(action, finalPayload);
     }
   };
 
@@ -63,7 +65,7 @@ const ButtonRender = ({
       onClick={handleClick}
       {...props}
     >
-      {IconComponent && <IconComponent className={cn("mr-2", text ? "size-4" : "size-full")} />} {/* Adjust icon size/margin based on if text is present */}
+      {icon && IconRender(icon, 4 )} {/* Adjust icon size/margin based on if text is present */}
       {text}
     </Button>
   );

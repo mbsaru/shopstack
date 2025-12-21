@@ -3,11 +3,23 @@
 import React from 'react';
 import ButtonRender from './ButtonRender';
 
+import { useSelector } from "react-redux";
+import {
+  addToCart,
+  removeFromCart,
+  incrementQuantity,
+  decrementQuantity
+} from "@/store/cartSlice";
+
 export function ProductCard({ product, config, dispatchAction }) {
 
     const { id, name, description, price, originalPrice, discountPrice, image } = product;
 
     const { card, image: imageConfig, title, description: descriptionConfig, price: priceConfig, rating, button } = config;
+
+    const cartItem = useSelector(
+        (state) => state.cart.items[id]
+    );
 
     const cardClasses = `${card?.layout === "horizontal" ? "flex gap-4" : "w-72"} ${card?.baseClasses || ''}`;
     const imageSizeClass = card?.layout === "horizontal" ? "w-24 h-24" : "w-full h-48";
@@ -74,24 +86,83 @@ export function ProductCard({ product, config, dispatchAction }) {
                 )}
 
                 {button?.show && (
-                    <ButtonRender
-                        text={button?.text || "Add to Cart"}
-                        onClick={{
-                            action: "cart",
-                            payload: {
-                                action: (data) => ({ type: "addToCart", payload: { ...data, product } }),
-                                data: {
-                                    id: product.id,
-                                    name: product.name,
-                                    price: parseFloat(product.discountPrice || product.originalPrice),
-                                    quantity: 1,
-                                    image: product.image,
-                                },
-                            },
-                        }}
-                        dispatchAction={dispatchAction}
-                        itemContext={{ product_id: id, product }}
-                    />
+                    <div className="flex items-center gap-2 mt-2">
+                        {!cartItem && (
+                            <ButtonRender
+                                text={button?.text || "Add to Cart"}
+                                onClick={{
+                                    action: "handleActionDispatch",
+                                    payload: {
+                                        action: "cart", 
+                                        dispatch:"addToCart",
+                                        data: {
+                                            id: product.id,
+                                            name: product.name,
+                                            price: parseFloat(product.discountPrice || product.originalPrice),
+                                            quantity: 1,
+                                            image: product.image,
+                                        },
+                                    },
+                                }}
+                                dispatchAction={dispatchAction}
+                                itemContext={{ product_id: id, product }}
+                            />
+
+                        )}
+                        {cartItem && (
+                            <>
+                                <ButtonRender
+                                    icon = "Trash2"
+                                    onClick={{
+                                        action: "handleActionDispatch",
+                                        payload: {
+                                            action: "cart", 
+                                            dispatch:"removeFromCart",
+                                            data: {
+                                                id: product.id,
+                                            },
+                                        },
+                                    }}
+                                    dispatchAction={dispatchAction}
+                                    itemContext={{ product_id: id, product }}
+                                />
+                                <ButtonRender
+                                    icon = "Minus"
+                                    onClick={{
+                                        action: "handleActionDispatch",
+                                        payload: {
+                                            action: "cart", 
+                                            dispatch:"decrementQuantity",
+                                            data: {
+                                                id: product.id,
+                                            },
+                                        },
+                                    }}
+                                    dispatchAction={dispatchAction}
+                                    itemContext={{ product_id: id, product }}
+                                />
+                                <ButtonRender
+                                 text = {cartItem.quantity}
+                                />
+                                <ButtonRender
+                                    icon = "Plus"
+                                    onClick={{
+                                        action: "handleActionDispatch",
+                                        payload: {
+                                            action: "cart", 
+                                            dispatch:"incrementQuantity",
+                                            data: {
+                                                id: product.id,
+                                            },
+                                        },
+                                    }}
+                                    dispatchAction={dispatchAction}
+                                    itemContext={{ product_id: id, product }}
+                                />
+                            </>
+
+                        )}
+                    </div>
                 )}
             </div>
         </div>

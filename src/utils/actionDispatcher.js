@@ -194,6 +194,16 @@ export const dispatchAction = async (actionName, payload, pageContext) => {
 
 const handleCart = (payload) => {
   if (!payload || !payload.data) return;
-  _dispatch(addToCart(payload.data));
-  console.log('Added to cart:', payload.data);
+  if (payload.dispatch === "addToCart"){
+    _dispatch(addToCart(payload.data));
+  }
+  else if (payload.dispatch === "incrementQuantity"){
+    _dispatch(incrementQuantity(payload.data));
+  }
+  else if (payload.dispatch === "decrementQuantity"){
+    _dispatch(decrementQuantity(payload.data))
+  }
+  else{
+    _dispatch(removeFromCart(payload.data))
+  }
 };

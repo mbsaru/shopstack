@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import * as Icons from "lucide-react";
 import { useSelector } from "react-redux";
+import { IconRender } from "./IconRender";
 
 import {
   NavigationMenu,
@@ -33,8 +33,8 @@ export function NavigationPanel({ menuItems = [], config = {} }) {
   } = config;
 
 
-  const leftItems = menuItems.filter(item => !rightSectionItems.includes(item.title));
-  const rightItems = menuItems.filter(item => rightSectionItems.includes(item.title));
+  const leftItems = menuItems.filter(item => !rightSectionItems.includes(item.id));
+  const rightItems = menuItems.filter(item => rightSectionItems.includes(item.id));
 
   return (
     <nav className={`w-full ${backgroundColor} ${textColor} flex items-center justify-between ${padding}`}>
@@ -71,15 +71,13 @@ function renderMenuItems(menuItems) {
   return menuItems.map((menuItem, idx) => {
     switch (menuItem.type) {
       case "imageGrid":
-        return renderImageGrid(menuItem, idx);
+        return renderImageGrid(menuItem, menuItem.id);
       case "ComponentsGrid":
-        return renderComponentsGrid(menuItem, idx);
+        return renderComponentsGrid(menuItem, menuItem.id);
       case "SingleLink":
-        return renderSingleLink(menuItem, idx);
+        return renderSingleLink(menuItem, menuItem.id);
       case "List":
-        return renderList(menuItem, idx);
-      case "WithIcon":
-        return renderWithIcon(menuItem, idx);
+        return renderList(menuItem, menuItem.id);
       default:
         return null;
     }
@@ -155,8 +153,8 @@ function renderSingleLink(item, idx) {
     <NavigationMenuItem key={idx}>
       <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
         <Link href={item.href} >
-          {item.icon ? renderIcon(item.icon) : item.title}
-          {item.title === "Cart" && cartItems && (
+          {item.icon ? IconRender(item.icon) : item.title}
+          {item.title === "Cart" && cartItems > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
               {cartItems}
             </span>
@@ -169,17 +167,23 @@ function renderSingleLink(item, idx) {
 
 /** List Menu */
 function renderList(item, idx) {
+  var style = item.style
   return (
     <NavigationMenuItem key={idx}>
-      <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+      <NavigationMenuTrigger>{item?.icon ? IconRender(item.icon): item.title}</NavigationMenuTrigger>
       <NavigationMenuContent>
-        <ul className="grid w-[300px] gap-4">
+        <ul className={style?.listGrid}>
           {item.gridList?.map((subItem, subIdx) => (
             <NavigationMenuLink key={subIdx} asChild>
               <Link href={subItem.path}>
-                <div className="font-medium">{subItem.title}</div>
-                {subItem.caption && (
-                  <div className="text-muted-foreground">{subItem.caption}</div>
+                {subItem?.icon && IconRender(subItem?.icon)}
+                {(subItem?.title && style?.titleFont) ?
+                  <div className={style.titleFont}>{subItem.title}</div>
+                  :
+                  subItem.title
+                }
+                {subItem?.caption && (
+                  <div className={item?.captionFont}>{subItem.caption}</div>
                 )}
               </Link>
             </NavigationMenuLink>
@@ -190,34 +194,8 @@ function renderList(item, idx) {
   );
 }
 
-/** Menu With Icon */
-function renderWithIcon(item, idx) {
-  return (
-    <NavigationMenuItem key={idx}>
-      <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
-      <NavigationMenuContent>
-        <ul className="grid gap-4">
-          {item.gridList?.map((subItem, iconIdx) => (
-            <li key={iconIdx}>
-              <NavigationMenuLink asChild>
-                <Link href={subItem.href} className="flex items-center gap-2">
-                  {renderIcon(subItem.icon)}
-                  {subItem.title}
-                </Link>
-              </NavigationMenuLink>
-            </li>
-          ))}
-        </ul>
-      </NavigationMenuContent>
-    </NavigationMenuItem>
-  );
-}
 
-/** Render icon dynamically from lucide-react */
-const renderIcon = (iconName) => {
-  const IconComponent = Icons[iconName];
-  return IconComponent ? <IconComponent size={18} /> : null;
-};
+
 
 /** Generic List Item Component */
 function DynamicListItem({ title, children, href, ...props }) {

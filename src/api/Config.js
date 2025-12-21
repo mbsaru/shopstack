@@ -257,6 +257,7 @@ export const UiConfig = {
                 "props":{
                     menuItems:[
                         {
+                            "id":"newArrivals",
                             "type": "imageGrid",
                             "title": "New Arrivals",
                             "path": "/new-arrivals",
@@ -281,6 +282,7 @@ export const UiConfig = {
                             ]
                         },
                         {
+                            "id":"categories",
                             "type": "ComponentsGrid",
                             "title": "Categories",
                             "gridList": [
@@ -291,42 +293,55 @@ export const UiConfig = {
                             ]
                         },
                         {
+                            "id":"offers",
                             "type": "SingleLink",
                             "title": "Offers",
                             "href": "/offers"
                         },
                         {
+                            "id":"helpSupport",
                             "type": "List",
                             "title": "Help & Support",
                             "gridList": [
                                 { "title": "Customer Support", "path": "/help/support", "caption": "24/7 assistance" },
                                 { "title": "Track Order", "path": "/help/track", "caption": "See your order status" },
                                 { "title": "Return Policy", "path": "/help/returns", "caption": "Hassle-free returns" }
-                            ]
+                            ],
+                            "style":{
+                                "listGrid":"grid w-[300px] gap-4",
+                                "titleFont":"font-medium",
+                                "captionFont":"text-muted-foreground"
+                            }
                         },
                         {
+                            "id":"cart",
                             "type": "SingleLink",
                             "title": "Cart",
                             "href": "/cart",
                             "icon": "ShoppingCart"
                         },
                         {
-                            "type": "WithIcon",
+                            "id":"myAccount",
+                            "icon":"UserCircle",
+                            "type": "List",
                             "title": "My Account",
                             "gridList": [
-                                { "title": "Profile", "href": "/account/profile", "icon": "User" },
-                                { "title": "Orders", "href": "/account/orders", "icon": "Package" },
-                                { "title": "Wishlist", "href": "/account/wishlist", "icon": "Heart" },
-                                { "title": "Cart", "href": "/cart", "icon": "ShoppingCart" }
-                            ]
+                                { "title": "Profile", "path": "/account/profile", "icon": "User" },
+                                { "title": "Orders", "path": "/account/orders", "icon": "Package" },
+                                { "title": "Wishlist", "path": "/account/wishlist", "icon": "Heart" },
+                                { "title": "Cart", "path": "/cart", "icon": "ShoppingCart" }
+                            ],
+                            "style":{
+                                "listGrid":"grid gap-4",
+                            }
                         }
                     ],
                     config : {
                     backgroundColor: "bg-gray-900",
                     textColor: "text-black",
                     logo: <img src="/logo.png" alt="Logo" className="h-8" />,
-                    logoPosition: "left", // left | center | right
-                    rightSectionItems: ["Cart","My Account"], // Move My Account to right
+                    logoPosition: "center", // left | center | right
+                    rightSectionItems: ["cart","myAccount"], // Move My Account to right
                     padding : "px-4 py-2",
                     }
                 }
